@@ -1,7 +1,8 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { isString } from "../../utils/inputValidaters";
 import { auth } from "../../firebaseConfig";
+import inputValidater from "../../utils/inputValidater";
+
 const useSignUp = () => {
   const auth = getAuth();
   const [textBoxValue, setTextBoxValue] = useState({
@@ -11,7 +12,10 @@ const useSignUp = () => {
   });
 
   const createUser = () => {
-    const message = isString(2);
+    const { string, bool } = inputValidater();
+    const wdwd = string().isString().isEmail().validate("dw@gmail.com");
+
+    console.log(wdwd);
     return;
     createUserWithEmailAndPassword(
       auth,
