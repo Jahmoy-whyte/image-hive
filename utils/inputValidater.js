@@ -62,7 +62,7 @@ const inputValidater = () => {
   function string() {
     //string has different validation tests
 
-    function isEmail(errorMessage = "error is not email") {
+    function isEmail(errorMessage = "Email format is incorrect") {
       // when called as anonymous function for testing if value is email is pushed in to the validate array
       // which will later be used. for now it is just storing the function.
       validateArray.push((value) => {
@@ -85,12 +85,22 @@ const inputValidater = () => {
       return this;
     }
 
+    function isNotBlank(errorMessage = "string is empty") {
+      validateArray.push((value) => {
+        if (value == "") {
+          return errorMessage;
+        }
+        return null;
+      });
+      return this;
+    }
+
     function minLength(
       length = 0,
       errorMessage = "error text length to small"
     ) {
       validateArray.push((value) => {
-        if (value < length) {
+        if (value.length < length) {
           return errorMessage;
         }
         return null;
@@ -100,7 +110,7 @@ const inputValidater = () => {
 
     function maxLength(length = 0, errorMessage = "error text length to long") {
       validateArray.push((value) => {
-        if (value > length) {
+        if (value.length > length) {
           return errorMessage;
         }
         return null;
@@ -108,7 +118,7 @@ const inputValidater = () => {
       return this;
     }
 
-    return { isEmail, isString, minLength, maxLength, validate };
+    return { isEmail, isString, minLength, maxLength, isNotBlank, validate };
   }
 
   //  ========================================================================

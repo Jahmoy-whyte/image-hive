@@ -9,12 +9,16 @@ const TextBox = ({
   value = "",
   secureTextEntry = false,
   textBoxContainerStyle = "",
+  keyboardType = "default",
+  maxLength = 200,
 }) => {
   return (
     <View className={`flex-1 ${textBoxContainerStyle}`}>
       <Text className="font-interRegular text-sm mb-1">{label}:</Text>
 
       <TextInput
+        maxLength={maxLength}
+        keyboardType={keyboardType}
         className="border-gray-300 border-[1px] px-3 min-h-[46px] rounded-3xl"
         onChangeText={(value) => onChangeText(value)}
         placeholder={placeHolder}

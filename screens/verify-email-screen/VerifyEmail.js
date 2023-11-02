@@ -14,7 +14,10 @@ import TextBox from "../../components/TextBox";
 import Button from "../../components/Button";
 import Checkbox from "expo-checkbox";
 import AuthStackHeading from "../../components/AuthStackHeading";
+import useVerifyEmail from "./useVerifiyEmail";
 const VerifyEmail = ({ navigation }) => {
+  const { buttonLoading, email, isLoading, sendVerificationLink, verify } =
+    useVerifyEmail();
   return (
     <>
       <ExpoStatusBar style="light" />
@@ -27,19 +30,25 @@ const VerifyEmail = ({ navigation }) => {
               <Text className="font-interBold text-sm">Instruction</Text>
               <Text className="font-interRegular text-sm">
                 Email as been sent to
-                <Text className="font-interBold text-sm"> myemail..com </Text>
+                <Text className="font-interBold text-sm"> {email} </Text>
                 please open your email and click on the link to verify your
                 email.
               </Text>
             </View>
 
-            <Button text="Verify" />
+            <Button text="Verify" isLoading={buttonLoading} onPress={verify} />
           </View>
         </ScrollView>
 
         <Text className="font-interRegular text-sm text-center mb-5">
           Not seeing link
-          <Text className="font-interBold text-sm text-primary"> Resend </Text>
+          <Text
+            onPress={() => sendVerificationLink()}
+            className="font-interBold text-sm text-primary"
+            disabled={isLoading}
+          >
+            {isLoading ? "..loading" : " Resend"}
+          </Text>
         </Text>
       </SafeContainer>
     </>

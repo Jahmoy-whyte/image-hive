@@ -15,7 +15,7 @@ const Button = ({
       className={`bg-primary justify-center items-center rounded-3xl min-h-[46] py-1  ${buttonStyle}`}
     >
       <Text className={`text-white font-interBold text-sm ${textStyle}`}>
-        {isLoading ? "loading" : text}
+        {isLoading ? "...loading" : text}
       </Text>
     </TouchableOpacity>
   );

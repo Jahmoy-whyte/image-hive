@@ -14,7 +14,9 @@ import TextBox from "../../components/TextBox";
 import Button from "../../components/Button";
 import Checkbox from "expo-checkbox";
 import AuthStackHeading from "../../components/AuthStackHeading";
+import useLogin from "./useLogin";
 const Login = ({ navigation }) => {
+  const { isLoading, login, setTextBoxValue, textBoxValue } = useLogin();
   return (
     <>
       <ExpoStatusBar style="light" />
@@ -27,8 +29,23 @@ const Login = ({ navigation }) => {
           />
 
           <View className="p-3 " style={{ gap: 12 }}>
-            <TextBox label="Email" placeHolder="Please enter your email" />
             <TextBox
+              value={textBoxValue.email}
+              isDisabled={isLoading}
+              keyboardType="email-address"
+              onChangeText={(value) =>
+                setTextBoxValue((prev) => ({ ...prev, email: value }))
+              }
+              label="Email"
+              placeHolder="Please enter your email"
+            />
+            <TextBox
+              value={textBoxValue.password}
+              secureTextEntry={true}
+              isDisabled={isLoading}
+              onChangeText={(value) =>
+                setTextBoxValue((prev) => ({ ...prev, password: value }))
+              }
               label="Password"
               placeHolder="Please enter your password"
             />
@@ -40,7 +57,7 @@ const Login = ({ navigation }) => {
               Forgot password?
             </Text>
 
-            <Button text="Login" />
+            <Button text="Login" onPress={login} isLoading={isLoading} />
           </View>
         </ScrollView>
       </SafeContainer>

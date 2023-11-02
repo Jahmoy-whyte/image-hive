@@ -16,7 +16,7 @@ import Checkbox from "expo-checkbox";
 import AuthStackHeading from "../../components/AuthStackHeading";
 import useSignUp from "./useSignUp";
 const Signup = ({ navigation }) => {
-  const { createUser, setTextBoxValue, textBoxValue } = useSignUp();
+  const { createUser, setTextBoxValue, textBoxValue, isLoading } = useSignUp();
   return (
     <>
       <ExpoStatusBar style="light" />
@@ -29,11 +29,36 @@ const Signup = ({ navigation }) => {
           />
 
           <View className="p-3 " style={{ gap: 12 }}>
-            <TextBox label="Email" placeHolder="Please enter your email" />
-            <TextBox label="Password" placeHolder="Please enter a password" />
+            <TextBox
+              isDisabled={isLoading}
+              keyboardType="email-address"
+              label="Email"
+              placeHolder="Please enter your email"
+              value={textBoxValue.email}
+              onChangeText={(value) =>
+                setTextBoxValue((prev) => ({ ...prev, email: value }))
+              }
+            />
+            <TextBox
+              isDisabled={isLoading}
+              secureTextEntry={true}
+              label="Password"
+              placeHolder="Please enter a password"
+              value={textBoxValue.password}
+              onChangeText={(value) =>
+                setTextBoxValue((prev) => ({ ...prev, password: value }))
+              }
+            />
 
             <View className="flex-1 flex-row gap-2 items-center ">
-              <Checkbox />
+              <Checkbox
+                disabled={isLoading}
+                onValueChange={(value) =>
+                  setTextBoxValue((prev) => ({ ...prev, checked: value }))
+                }
+                value={textBoxValue.checked}
+                color={textBoxValue.checked ? "#DD133C" : null}
+              />
               <Text className="flex-wrap flex-1 font-interRegular text-sm">
                 Tap Here To Read About Our{" "}
                 <Text className="font-interBold text-primary">
@@ -42,7 +67,11 @@ const Signup = ({ navigation }) => {
               </Text>
             </View>
 
-            <Button text="Sign up" onPress={() => createUser()} />
+            <Button
+              text="Sign up"
+              onPress={() => createUser()}
+              isLoading={isLoading}
+            />
           </View>
         </ScrollView>
       </SafeContainer>
