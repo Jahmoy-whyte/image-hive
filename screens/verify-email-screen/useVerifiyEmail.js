@@ -2,6 +2,7 @@ import { getAuth, sendEmailVerification } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useAuthContext } from "../../context/AuthContextProvider";
 
 const useVerifyEmail = () => {
   const route = useRoute();
@@ -10,6 +11,7 @@ const useVerifyEmail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [buttonLoading, setButtonLoading] = useState(false);
 
+  const { getProfile } = useAuthContext();
   useEffect(() => {
     // sendVerificationLink();
   }, []);
@@ -39,12 +41,9 @@ const useVerifyEmail = () => {
       const verified = auth.currentUser.emailVerified;
       if (!verified) return showToast().error("", "Email is not Verified");
 
-      if (route.params.navigateTo === "login") {
-        nav.navigate("login");
-        showToast().success("", "Email verified you can now login");
-      } else {
-        nav.navigate("home");
-      }
+      await getProfile(auth.currentUser.uid);
+
+      showToast().success("", "Email verified");
     } catch (error) {
       showToast().error("", error.message);
     } finally {

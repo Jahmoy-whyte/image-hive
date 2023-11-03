@@ -1,7 +1,7 @@
 import { SafeAreaView, View, Text, TextInput } from "react-native";
 
 const TextBox = ({
-  label = "label",
+  label = null,
   onChangeText,
   isDisabled,
   isLoading,
@@ -14,7 +14,9 @@ const TextBox = ({
 }) => {
   return (
     <View className={`flex-1 ${textBoxContainerStyle}`}>
-      <Text className="font-interRegular text-sm mb-1">{label}:</Text>
+      {label ? (
+        <Text className="font-interRegular text-sm mb-1">{label}:</Text>
+      ) : null}
 
       <TextInput
         maxLength={maxLength}

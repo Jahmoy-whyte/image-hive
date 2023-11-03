@@ -19,35 +19,35 @@ import { useEffect, useState } from "react";
 import LoadingIndicator from "./components/LoadingIndicator";
 import AuthContextProvider, {
   useAuthContext,
+  AUTH_STATES,
 } from "./context/AuthContextProvider";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
-  const { currentAuthState, user, AUTH_STATES } = useAuthContext();
+  const { currentAuthState, user } = useAuthContext();
   return (
     <>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {currentAuthState === AUTH_STATES.isLoading ? (
-            <Stack.Group>
-              <Stack.Screen name="loading" component={LoadingIndicator} />
-            </Stack.Group>
-          ) : currentAuthState === AUTH_STATES.signedOut ? (
+          {currentAuthState === AUTH_STATES.signedOut ? (
             <Stack.Group>
               <Stack.Screen name="landing" component={LandingScreen} />
               <Stack.Screen name="signup" component={Signup} />
               <Stack.Screen name="login" component={Login} />
-              <Stack.Screen
-                name="select-categories"
-                component={SelectCategories}
-              />
-              <Stack.Screen name="reset-password" component={ResetPassword} />
               <Stack.Screen name="verify-email" component={VerifyEmail} />
-              <Stack.Screen name="profile-setup" component={ProfileSetup} />
+              <Stack.Screen name="reset-password" component={ResetPassword} />
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.signedIn ? (
             <Stack.Group>
               <Stack.Screen name="home" component={Home} />
+            </Stack.Group>
+          ) : currentAuthState === AUTH_STATES.profileSetup ? (
+            <Stack.Group>
+              <Stack.Screen name="profile-setup" component={ProfileSetup} />
+              <Stack.Screen
+                name="select-categories"
+                component={SelectCategories}
+              />
             </Stack.Group>
           ) : null}
         </Stack.Navigator>

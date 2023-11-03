@@ -33,16 +33,9 @@ const useLogin = () => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        // ...
+        if (user.emailVerified) return;
 
-        if (user.emailVerified) {
-          nav.navigate("home");
-          return;
-        }
-
-        nav.navigate("verify-email", {
-          navigateTo: "home",
-        });
+        nav.navigate("verify-email");
       })
       .catch((error) => {
         const code = error.code;

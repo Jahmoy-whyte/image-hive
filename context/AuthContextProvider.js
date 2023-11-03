@@ -1,47 +1,67 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { auth } from "../firebaseConfig";
+import { firebaseAuth, db } from "../firebaseConfig";
+
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { showToast } from "../utils/toastLib";
 const AuthContext = createContext();
-
+export const AUTH_STATES = {
+  signedIn: "signed-in",
+  isLoading: "isLoading",
+  signedOut: "signedOut",
+  profileSetup: "profileSetup",
+  verifyEmail: "verifyEmail",
+};
 const AuthContextProvider = ({ children }) => {
-  const AUTH_STATES = {
-    signedIn: "signed-in",
-    isLoading: "isLoading",
-    signedOut: "signedOut",
-  };
-
   const [user, setUser] = useState({});
   const [currentAuthState, setCurrentAuthState] = useState(
-    AUTH_STATES.signedOut
+    AUTH_STATES.isLoading
   );
 
-  console.log(auth);
-
   useEffect(() => {
-    const test = async () => {
-      auth.authStateReady().then((isReady) => {
-        console.log(isReady);
-      });
-    };
-
-    test();
+    onAuthStateChanged(firebaseAuth, (user) => {
+      if (user && user.emailVerified) {
+        console.log(" usedjijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+        getProfile(user.uid); // test if your profile exist if not navigate to setup profile
+      } else {
+        setCurrentAuthState(AUTH_STATES.signedOut);
+      }
+    });
   }, []);
+
+  const getProfile = async (id) => {
+    try {
+      //
+      const docRef = doc(db, "users", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setUser(docSnap.data());
+        setCurrentAuthState(AUTH_STATES.signedIn);
+        console.log("Document data:", docSnap.data());
+      } else {
+        setCurrentAuthState(AUTH_STATES.profileSetup);
+        console.log("No such document!");
+      }
+    } catch (error) {
+      showToast().error("", error.message);
+    }
+  };
 
   if (currentAuthState == AUTH_STATES.isLoading) {
     return <LoadingIndicator />;
   }
 
   return (
-    <AuthContext.Provider value={{ currentAuthState, user, AUTH_STATES }}>
+    <AuthContext.Provider value={{ currentAuthState, user, getProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuthContext = () => {
-  const { currentAuthState, user, AUTH_STATES } = useContext(AuthContext);
-  return { currentAuthState, user, AUTH_STATES };
+  const { currentAuthState, user, getProfile } = useContext(AuthContext);
+  return { currentAuthState, user, getProfile };
 };
 
 export default AuthContextProvider;

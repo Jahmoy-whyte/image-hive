@@ -1,6 +1,6 @@
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../../firebaseConfig";
+import { firebaseAuth } from "../../firebaseConfig";
 import inputValidater from "../../utils/inputValidater";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
@@ -51,9 +51,7 @@ const useSignUp = () => {
         // Signed up
         const user = userCredential.user;
 
-        nav.navigate("verify-email", {
-          navigateTo: "login",
-        });
+        nav.navigate("verify-email");
         // ...
       })
       .catch((error) => {
