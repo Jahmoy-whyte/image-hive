@@ -21,6 +21,7 @@ import AuthContextProvider, {
   useAuthContext,
   AUTH_STATES,
 } from "./context/AuthContextProvider";
+import { TestScreen1 } from "./TestScreenb";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
@@ -57,3 +58,14 @@ export default function AppNavigation() {
     </>
   );
 }
+///          <Stack.Screen name="profile-setupw" component={TestScreen1} />
+
+[
+  { category: "Landscape" },
+  { category: "Cars" },
+  { category: "Landscape" },
+  { category: "3D Renders" },
+  { category: "Food" },
+  { category: "Landscape" },
+  { category: "Fashion & Beauty" },
+];

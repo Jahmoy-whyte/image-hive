@@ -45,6 +45,7 @@ const AuthContextProvider = ({ children }) => {
       }
     } catch (error) {
       showToast().error("", error.message);
+      console.log(error);
     }
   };
 

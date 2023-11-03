@@ -21,6 +21,8 @@ import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { showToast } from "../../utils/toastLib";
 import * as Linking from "expo-linking";
+import { validatePassword } from "firebase/auth";
+import inputValidater from "../../utils/inputValidater";
 
 const ProfileSetup = ({ navigation }) => {
   const [image, setImage] = useState(null);
@@ -65,6 +67,23 @@ const ProfileSetup = ({ navigation }) => {
     } catch (error) {
       showToast().error(error.message);
     }
+  };
+
+  const nextScreen = () => {
+    const { string } = inputValidater();
+
+    const res = string()
+      .isNotBlank("Please enter username")
+      .minLength(5, "username must be 5 or more letters")
+      .maxLength(100, "username is too long")
+      .validate(username.trim());
+
+    if (!res.isValid) return showToast().error("", res.error);
+
+    navigation.navigate("select-categories", {
+      username: username.trim(),
+      image: image,
+    });
   };
 
   const ModelOptions = ({ text, onPress, children }) => {
@@ -148,9 +167,14 @@ const ProfileSetup = ({ navigation }) => {
                 ) : null}
               </View>
             </View>
-            <TextBox label="Username" placeHolder="Please enter a username" />
+            <TextBox
+              label="Username"
+              placeHolder="Please enter a username"
+              onChangeText={(value) => setUsername(value)}
+              value={username}
+            />
 
-            <Button text="Next" onPress={() => {}} />
+            <Button text="Next" onPress={nextScreen} />
           </View>
         </ScrollView>
       </SafeContainer>

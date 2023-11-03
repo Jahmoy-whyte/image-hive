@@ -17,14 +17,18 @@ import TextBox from "../../components/TextBox";
 import Button from "../../components/Button";
 import Checkbox from "expo-checkbox";
 import AuthStackHeading from "../../components/AuthStackHeading";
+import useSelectCategories from "./useSelectCategories";
+import LoadingIndicator from "../../components/LoadingIndicator";
 const SelectCategories = ({ navigation }) => {
-  const categories = [
-    { text: "landscape", id: 1 },
-    { text: "Cars", id: 2 },
-    { text: "3D Renders", id: 3 },
-    { text: "Food", id: 4 },
-    { text: "Fashion & Beauty", id: 5 },
-  ];
+  const {
+    selected,
+    setSelected,
+    categories,
+    isLoading,
+    createProfile,
+    select,
+    buttonIsLoading,
+  } = useSelectCategories();
   return (
     <>
       <ExpoStatusBar style="light" />
@@ -45,22 +49,32 @@ const SelectCategories = ({ navigation }) => {
           </AuthStackHeading>
 
           <View style={{ gap: 3, padding: 12 }}>
-            {categories.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                className="flex-1 flex-row px-3 items-center my-1 rounded-3xl border-[1px] border-gray-300 min-h-[46]"
-              >
-                <Checkbox style={{ marginRight: 12 }} />
-                <Text className="flex-1 font-interRegular text-sm">
-                  {item.text}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {isLoading ? (
+              <LoadingIndicator />
+            ) : (
+              categories.map((category) => (
+                <TouchableOpacity
+                  onPress={() => select(category.category)}
+                  key={category.id}
+                  className="flex-1 flex-row px-3 items-center my-1 rounded-3xl border-[1px] border-gray-300 min-h-[46]"
+                >
+                  <Checkbox
+                    style={{ marginRight: 12 }}
+                    value={selected.includes(category.category)}
+                    color={"#DD133C"}
+                  />
+                  <Text className="flex-1 font-interRegular text-sm">
+                    {category.category}
+                  </Text>
+                </TouchableOpacity>
+              ))
+            )}
 
             <Button
-              text="Next"
+              text="Done"
               buttonStyle={"mt-3"}
-              onPress={() => navigation.navigate("home")}
+              isLoading={buttonIsLoading}
+              onPress={createProfile}
             />
           </View>
         </ScrollView>
