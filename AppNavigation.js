@@ -23,10 +23,24 @@ import AuthContextProvider, {
 } from "./context/AuthContextProvider";
 import { TestScreen1 } from "./TestScreenb";
 import BottomTabs from "./screens/bottom-tabs/BottomTabs";
+import SafeContainer from "./components/SafeContainer";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
   const { currentAuthState, user } = useAuthContext();
+
+  const Myscreen = () => {
+    return (
+      <>
+        <SafeContainer>
+          <View style={{ flex: 1, backgroundColor: "blue" }}>
+            <Text>hello there</Text>
+          </View>
+        </SafeContainer>
+      </>
+    );
+  };
   return (
     <>
       <NavigationContainer>
@@ -42,7 +56,7 @@ export default function AppNavigation() {
           ) : currentAuthState === AUTH_STATES.signedIn ? (
             <Stack.Group>
               <Stack.Screen name="bottom-tabs" component={BottomTabs} />
-              <Stack.Screen name="signup" component={Signup} />
+              <Stack.Screen name="signup" component={Myscreen} />
               <Stack.Screen name="test" component={TestScreen1} />
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.profileSetup ? (

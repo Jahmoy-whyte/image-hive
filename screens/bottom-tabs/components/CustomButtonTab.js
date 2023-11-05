@@ -29,7 +29,7 @@ const CustomButtonTab = ({ state, navigation }) => {
             className="justify-center items-center"
             key={key}
             onPress={() => {
-              navigation.navigate("signup");
+              navigation.navigate(name);
             }}
           >
             <Image
