@@ -14,7 +14,14 @@ export const AUTH_STATES = {
   verifyEmail: "verifyEmail",
 };
 const AuthContextProvider = ({ children }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState({
+    Bio: null,
+    profileImage: null,
+    id: null,
+    username: null,
+    timeStamp: null,
+  });
+
   const [currentAuthState, setCurrentAuthState] = useState(
     AUTH_STATES.isLoading
   );

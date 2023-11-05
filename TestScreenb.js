@@ -25,11 +25,3 @@ export const TestScreen1 = () => {
     </View>
   );
 };
-
-[
-  { category: "Landscape" },
-  { category: "Cars" },
-  { category: "3D Renders" },
-  { category: "Food" },
-  { category: "Fashion & Beauty" },
-];

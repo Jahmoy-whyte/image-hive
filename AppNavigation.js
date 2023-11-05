@@ -22,6 +22,7 @@ import AuthContextProvider, {
   AUTH_STATES,
 } from "./context/AuthContextProvider";
 import { TestScreen1 } from "./TestScreenb";
+import BottomTabs from "./screens/bottom-tabs/BottomTabs";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
@@ -40,7 +41,9 @@ export default function AppNavigation() {
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.signedIn ? (
             <Stack.Group>
-              <Stack.Screen name="home" component={Home} />
+              <Stack.Screen name="bottom-tabs" component={BottomTabs} />
+              <Stack.Screen name="signup" component={Signup} />
+              <Stack.Screen name="test" component={TestScreen1} />
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.profileSetup ? (
             <Stack.Group>
