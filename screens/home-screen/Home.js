@@ -21,7 +21,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import testimage from "../../assets/images/testimage.png";
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const { user } = useHome();
 
   const test = [
@@ -74,9 +74,13 @@ const Home = () => {
             ))}
           </ScrollView>
 
-          {test.map(() => {
+          {test.map((wdw, index) => {
             return (
-              <TouchableOpacity className="h-64 overflow-hidden rounded-lg mt-3 bg-slate-100-100">
+              <TouchableOpacity
+                key={index}
+                onPress={() => navigation.navigate("image-detail")}
+                className="h-64 overflow-hidden rounded-lg mt-3 bg-slate-100-100"
+              >
                 <Image
                   source={testimage}
                   resizeMode="cover"

@@ -25,6 +25,8 @@ import { TestScreen1 } from "./TestScreenb";
 import BottomTabs from "./screens/bottom-tabs/BottomTabs";
 import SafeContainer from "./components/SafeContainer";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import ImageDetail from "./screens/image-detail-screen/ImageDetail";
+import NavTest from "./screens/NavTest";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
@@ -55,7 +57,8 @@ export default function AppNavigation() {
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.signedIn ? (
             <Stack.Group>
-              <Stack.Screen name="bottom-tabs" component={BottomTabs} />
+              <Stack.Screen name="bottom-tabs" component={NavTest} />
+              <Stack.Screen name="image-detail" component={ImageDetail} />
               <Stack.Screen name="signup" component={Myscreen} />
               <Stack.Screen name="test" component={TestScreen1} />
             </Stack.Group>
@@ -76,7 +79,7 @@ export default function AppNavigation() {
   );
 }
 ///          <Stack.Screen name="profile-setupw" component={TestScreen1} />
-
+//   <Stack.Screen name="bottom-tabs2" component={NavTest} />
 [
   { category: "Landscape" },
   { category: "Cars" },
