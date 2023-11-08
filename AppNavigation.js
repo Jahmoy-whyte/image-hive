@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { useFonts } from "expo-font";
 import Toast from "react-native-toast-message";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -27,10 +27,39 @@ import SafeContainer from "./components/SafeContainer";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import ImageDetail from "./screens/image-detail-screen/ImageDetail";
 import NavTest from "./screens/NavTest";
+import { AScreen } from "./screens/a1/AScreen";
+import { BScreen } from "./screens/b1/BScreen";
+
+import { faker } from "@faker-js/faker";
+import { TouchableOpacity } from "react-native";
+import { fakerEN, fakerZH_TW } from "@faker-js/faker";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
   const { currentAuthState, user } = useAuthContext();
+
+  const click = () => {
+    let data = [];
+    for (let i = 0; i < 10; i++) {
+      const username = faker.person.fullName();
+      const bio = faker.person.bio();
+      const categories = ["Landscape", "3D Renders", "Food"];
+      const id = "myid";
+      const profileImage = faker.image.urlPicsumPhotos();
+
+      const testdata = {
+        username: username,
+        bio: bio,
+        categories: categories,
+        id: id,
+        profileImage: profileImage,
+        timeStamp: "",
+      };
+      data.push(testdata);
+    }
+
+    console.log(data);
+  };
 
   const Myscreen = () => {
     return (
@@ -38,6 +67,8 @@ export default function AppNavigation() {
         <SafeContainer>
           <View style={{ flex: 1, backgroundColor: "blue" }}>
             <Text>hello there</Text>
+
+            <Button title="click" onPress={() => click()} />
           </View>
         </SafeContainer>
       </>
@@ -57,10 +88,13 @@ export default function AppNavigation() {
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.signedIn ? (
             <Stack.Group>
-              <Stack.Screen name="bottom-tabs" component={NavTest} />
+              <Stack.Screen name="bottom-tabs" component={BottomTabs} />
               <Stack.Screen name="image-detail" component={ImageDetail} />
               <Stack.Screen name="signup" component={Myscreen} />
               <Stack.Screen name="test" component={TestScreen1} />
+              <Stack.Screen name="a" component={AScreen} />
+              <Stack.Screen name="b" component={BScreen} />
+              <Stack.Screen name="bottom-tabs1" component={NavTest} />
             </Stack.Group>
           ) : currentAuthState === AUTH_STATES.profileSetup ? (
             <Stack.Group>

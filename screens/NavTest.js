@@ -16,7 +16,7 @@ function HomeScreen({ navigation }) {
         style={{ marginTop: 10 }}
       />
       <Animated.View
-        className="bg-black w-10 h-10"
+        style={{ width: 300, height: 300, backgroundColor: "red" }}
         sharedTransitionTag="mytag"
       />
     </View>
@@ -33,7 +33,7 @@ function DetailsScreen({ navigation }) {
       />
       <Animated.Image
         source={{ uri: "https://picsum.photos/id/39/200" }}
-        className="bg-black w-44 h-44"
+        style={{ width: 100, height: 100 }}
         sharedTransitionTag="mytag"
       />
     </View>
