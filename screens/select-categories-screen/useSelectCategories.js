@@ -76,7 +76,7 @@ const useSelectCategories = () => {
         username: username,
         categories: selected,
         profileImage: imageUrl,
-        Bio: "",
+        bio: "",
         timeStamp: serverTimestamp(),
       });
       // getProfile will get and set the user obj in auth context as well as

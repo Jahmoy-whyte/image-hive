@@ -22,7 +22,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import testimage from "../../assets/images/testimage.png";
 
 const Home = ({ navigation }) => {
-  const { user } = useHome();
+  const { user, data } = useHome();
 
   const test = [
     { image: testimage },
@@ -74,30 +74,32 @@ const Home = ({ navigation }) => {
             ))}
           </ScrollView>
 
-          {test.map((wdw, index) => {
+          {data.map((data, index) => {
             return (
               <TouchableOpacity
-                key={index}
+                key={data.id}
                 onPress={() => navigation.navigate("image-detail")}
                 className="h-64 overflow-hidden rounded-lg mt-3 bg-slate-100-100"
               >
                 <Image
-                  source={testimage}
+                  source={{
+                    uri: data.image,
+                  }}
                   resizeMode="cover"
                   className="h-64 w-full"
                 />
                 <View className="flex-row  items-center p-3 absolute bg-black bg-blackOpacity z-10 w-full bottom-0 overflow-hidden">
                   <Image
-                    source={testimage}
+                    source={{ uri: data.profileImage }}
                     resizeMode="contain"
                     className="w-10 h-10 rounded-[40px]"
                   />
                   <View className="ml-3">
                     <Text className="font-interBold text-xs text-white">
-                      The Great Building
+                      {data.title}
                     </Text>
                     <Text className="font-interRegular   text-xs text-white">
-                      by:maddie
+                      by: {data.username}
                     </Text>
                   </View>
                 </View>
