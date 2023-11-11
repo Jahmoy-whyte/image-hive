@@ -6,6 +6,8 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import SafeContainer from "../../components/SafeContainer";
 import { AntDesign } from "@expo/vector-icons";
@@ -20,93 +22,37 @@ import CategoryBubble from "./components/CategoryBubble";
 import { FontAwesome } from "@expo/vector-icons";
 
 import testimage from "../../assets/images/testimage.png";
+import ImageCards from "./components/ImageCards";
+import ImageCardsSkeleton from "./components/ImageCardsSkeleton";
+import Heading from "./components/Heading";
 
 const Home = ({ navigation }) => {
-  const { user, data } = useHome();
+  const { user, state, loadMoreImages, navToDetails } = useHome();
+  const loadingSkeletonArray = [{ id: "id1" }, { id: "id2" }, { id: "id3" }];
 
-  const test = [
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-    { image: testimage },
-  ];
   return (
     <>
       <SafeContainer>
-        <ScrollView className="flex-1 p-3">
-          <View className="flex-row justify-between ">
-            <View className="flex-1">
-              <Text className="font-interBold text-3xl">Welcome</Text>
-              <Text className="font-interBold text-3xl">
-                Back {user.username.split(" ")[0]}!
-              </Text>
-            </View>
-
-            <Image
-              className="w-10 h-10 rounded-[40px]"
-              source={
-                user.profileImage
-                  ? { uri: user.profileImage }
-                  : profilePlaceHolder
-              }
-            />
-          </View>
-
-          <View className="flex-row my-3  border-gray-300 border-[1px] px-3 min-h-[46px] rounded-3xl items-center">
-            <AntDesign name="search1" size={20} color="black" />
-            <Text className="ml-2 text-xs">Search For Your Car Parts</Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <CategoryBubble
-              text={"Explore"}
-              categoryStyle={"bg-primary border-none"}
-              textStyle={"ml-2 text-white"}
-            >
-              <FontAwesome name="wpexplorer" size={20} color="white" />
-            </CategoryBubble>
-
-            {user.categories.map((text) => (
-              <CategoryBubble text={text} />
-            ))}
-          </ScrollView>
-
-          {data.map((data, index) => {
-            return (
-              <TouchableOpacity
-                key={data.id}
-                onPress={() => navigation.navigate("image-detail")}
-                className="h-64 overflow-hidden rounded-lg mt-3 bg-slate-100-100"
-              >
-                <Image
-                  source={{
-                    uri: data.image,
-                  }}
-                  resizeMode="cover"
-                  className="h-64 w-full"
-                />
-                <View className="flex-row  items-center p-3 absolute bg-black bg-blackOpacity z-10 w-full bottom-0 overflow-hidden">
-                  <Image
-                    source={{ uri: data.profileImage }}
-                    resizeMode="contain"
-                    className="w-10 h-10 rounded-[40px]"
-                  />
-                  <View className="ml-3">
-                    <Text className="font-interBold text-xs text-white">
-                      {data.title}
-                    </Text>
-                    <Text className="font-interRegular   text-xs text-white">
-                      by: {data.username}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+        <FlatList
+          ListHeaderComponent={() => <Heading user={user} />}
+          data={state.isLoading ? loadingSkeletonArray : state.imageArray}
+          ListFooterComponent={() => {
+            return state.isloadingMore ? (
+              <View className="justify-center items-center ">
+                <ActivityIndicator color={"black"} />
+              </View>
+            ) : null;
+          }}
+          onEndReached={loadMoreImages}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            return state.isLoading ? (
+              <ImageCardsSkeleton />
+            ) : (
+              <ImageCards data={item} onPress={navToDetails} />
             );
-          })}
-        </ScrollView>
+          }}
+        />
       </SafeContainer>
     </>
   );

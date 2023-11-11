@@ -80,6 +80,7 @@ export default function AppNavigation() {
   };
 
   const addusers = async () => {
+    return;
     let data = [];
     for (let i = 0; i < 10; i++) {
       const username = faker.person.fullName();
@@ -103,10 +104,8 @@ export default function AppNavigation() {
   };
 
   const addimages = async () => {
-    // get users
-    console.log(faker.image.urlPicsumPhotos());
-    return;
     let data = [];
+    return;
     let users = [];
 
     const querySnapshot = await getDocs(collection(db, "users"));
@@ -115,20 +114,25 @@ export default function AppNavigation() {
     });
 
     for (let i = 0; i < users.length - 1; i++) {
-      const image = faker.image.urlPicsumPhotos();
+      const images =
+        Math.round(Math.random()) > 0
+          ? [faker.image.urlPicsumPhotos(), faker.image.urlPicsumPhotos()]
+          : [faker.image.urlPicsumPhotos()];
       const title = faker.lorem.words({ min: 2, max: 2 });
       const categories = getRandomCategories();
       const likes = 0;
-      const view = 0;
+      const views = 0;
       const userId = users[i];
+      const description = faker.lorem.sentence({ min: 8, max: 15 });
 
       const testdata = {
         userId,
-        image,
+        images,
         title,
         categories,
         likes,
         view,
+        description,
         timeStamp: serverTimestamp(),
       };
 
@@ -139,6 +143,40 @@ export default function AppNavigation() {
     console.log(data);
   };
 
+  const addComments = async () => {
+    let data = [];
+    let users = [];
+    let images = [];
+
+    const querySnapshot1 = await getDocs(collection(db, "users"));
+    querySnapshot1.forEach((doc) => {
+      users.push(doc.id);
+    });
+
+    const querySnapshot2 = await getDocs(collection(db, "published"));
+    querySnapshot2.forEach((doc) => {
+      images.push(doc.id);
+    });
+
+    for (let i = 0; i < 1; i++) {
+      for (const user of users) {
+        const userId = user;
+        const comment = faker.lorem.sentence({ min: 10, max: 25 });
+        const testdata = {
+          userId,
+          comment,
+          timeStamp: serverTimestamp(),
+        };
+
+        await addDoc(
+          collection(db, "published", images[i], "comments"),
+          testdata
+        );
+      }
+    }
+    console.log("DONE");
+  };
+
   const Myscreen = () => {
     return (
       <>
@@ -146,11 +184,18 @@ export default function AppNavigation() {
           <View style={{ flex: 1, backgroundColor: "blue" }}>
             <Text>hello there</Text>
 
-            <Button title="add users" onPress={() => "addusers()"} />
+            <Button title="add users" onPress={() => addusers()} />
+            <Text>hello there</Text>
             <Button
               title="add images"
               onPress={() => addimages()}
               color={"gray"}
+            />
+            <Text>hello there</Text>
+            <Button
+              title="add comments"
+              onPress={() => addComments()}
+              color={"green"}
             />
           </View>
         </SafeContainer>
