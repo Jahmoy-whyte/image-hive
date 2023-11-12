@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { firebaseAuth, db } from "../firebaseConfig";
+import { firebaseAuth, db } from "../firebase/firebaseConfig";
 
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { showToast } from "../utils/toastLib";

@@ -8,7 +8,7 @@ import {
   limit,
   query,
 } from "firebase/firestore";
-import { db } from "../../firebaseConfig";
+import { db } from "../../firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
 
 const useImageDetail = () => {
@@ -71,6 +71,27 @@ const useImageDetail = () => {
       dispatch({ type: ACTIONS.set_is_error, payload: error.message });
     } finally {
       dispatch({ type: ACTIONS.set_is_Loading_Profile, payload: false });
+    }
+  };
+
+  const getComments1 = async () => {
+    try {
+      const q = query(
+        collection(db, "published", imageData.id, "comments"),
+        limit(1)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const commentsArray = [];
+      querySnapshot.forEach((doc) => {
+        commentsArray.push({ id: doc.id, ...doc.data() });
+      });
+      dispatch({ type: ACTIONS.set_comments, payload: commentsArray });
+    } catch (error) {
+      showToast().error("", error.message);
+      dispatch({ type: ACTIONS.set_is_error, payload: error.message });
+    } finally {
+      dispatch({ type: ACTIONS.set_is_Loading_Comments, payload: false });
     }
   };
 

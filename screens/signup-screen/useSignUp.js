@@ -1,13 +1,12 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { firebaseAuth } from "../../firebaseConfig";
 import inputValidater from "../../utils/inputValidater";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
+import { signUp } from "../../firebase/queries/usersQuery";
+import { firebaseAuth } from "../../firebase/firebaseConfig";
 
 const useSignUp = () => {
   const nav = useNavigation();
-  const auth = getAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [textBoxValue, setTextBoxValue] = useState({
@@ -26,11 +25,11 @@ const useSignUp = () => {
     password: () =>
       string()
         .isNotBlank("Please enter password")
-        .minLength(8, "Password must 8 letters or more"),
+        .minLength(1, "Password must 8 letters or more"),
     checked: () => bool().isTrue("Please read and agree to our privacy policy"),
   };
 
-  const createUser = () => {
+  const createUser = async () => {
     const { isValid, error } = validateSchema(signUpSchema, {
       ...textBoxValue,
       email: textBoxValue.email.trim(),
@@ -38,30 +37,25 @@ const useSignUp = () => {
     });
     if (!isValid) {
       showToast().error("", error);
+
       return;
     }
 
     setIsLoading(true);
-    createUserWithEmailAndPassword(
-      auth,
-      textBoxValue.email.trim(),
-      textBoxValue.password.trim()
-    )
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user;
+    try {
+      await signUp(
+        firebaseAuth,
+        textBoxValue.email.trim(),
+        textBoxValue.password.trim()
+      );
 
-        nav.navigate("verify-email");
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        showToast().error("", errorMessage);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      // sign up successfull
+      //nav.navigate("verify-email");
+    } catch (error) {
+      showToast().error("", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
