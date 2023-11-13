@@ -33,7 +33,7 @@ import { BScreen } from "./screens/b1/BScreen";
 import { faker } from "@faker-js/faker";
 import { TouchableOpacity } from "react-native";
 import { doc, setDoc } from "firebase/firestore";
-import { firebaseAuth, db } from "./firebase/firebaseConfig";
+import { firebaseAuth, db } from "./services/firebase/firebaseConfig";
 import { serverTimestamp } from "firebase/firestore";
 
 import { collection, getDocs, addDoc } from "firebase/firestore";

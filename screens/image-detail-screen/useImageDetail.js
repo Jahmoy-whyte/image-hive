@@ -8,7 +8,7 @@ import {
   limit,
   query,
 } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
+import { db } from "../../services/firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
 
 const useImageDetail = () => {

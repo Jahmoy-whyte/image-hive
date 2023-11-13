@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { firebaseAuth, db } from "../firebase/firebaseConfig";
+import { firebaseAuth, db } from "../services/firebase/firebaseConfig";
 
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { showToast } from "../utils/toastLib";
+import { fb_getProfile } from "../services/firebase/queries/users_collection";
 const AuthContext = createContext();
 export const AUTH_STATES = {
   signedIn: "signed-in",
@@ -39,20 +40,15 @@ const AuthContextProvider = ({ children }) => {
 
   const getProfile = async (id) => {
     try {
-      //
-      const docRef = doc(db, "users", id);
-      const docSnap = await getDoc(docRef);
+      const docSnap = await fb_getProfile(id);
       if (docSnap.exists()) {
         setUser(docSnap.data());
         setCurrentAuthState(AUTH_STATES.signedIn);
-        console.log("Document data:", docSnap.data());
       } else {
         setCurrentAuthState(AUTH_STATES.profileSetup);
-        console.log("No such document!");
       }
     } catch (error) {
       showToast().error("", error.message);
-      console.log(error);
     }
   };
 

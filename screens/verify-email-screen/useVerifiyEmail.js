@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAuthContext } from "../../context/AuthContextProvider";
+import {
+  fb_reloadCurrentUser,
+  fb_sendEmailVerification,
+} from "../../services/firebase/queries/auth";
 
 const useVerifyEmail = () => {
   const route = useRoute();
@@ -16,27 +20,13 @@ const useVerifyEmail = () => {
     // sendVerificationLink();
   }, []);
 
-  const sendVerificationLink = () => {
-    setIsLoading(true);
-    sendEmailVerification(auth.currentUser)
-      .then(() => {
-        showToast().info("", "Link sent");
-      })
-      .catch((error) => {
-        showToast().error("", error.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
   ///
 
   const verify = async () => {
     setButtonLoading(true);
 
     try {
-      await auth.currentUser.reload();
+      await fb_reloadCurrentUser();
 
       const verified = auth.currentUser.emailVerified;
       if (!verified) return showToast().error("", "Email is not Verified");
@@ -52,7 +42,7 @@ const useVerifyEmail = () => {
   };
 
   return {
-    sendVerificationLink,
+    fb_sendEmailVerification,
     verify,
     isLoading,
     buttonLoading,

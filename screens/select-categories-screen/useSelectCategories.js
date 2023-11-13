@@ -8,7 +8,11 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
-import { db, storage, firebaseAuth } from "../../firebase/firebaseConfig";
+import {
+  db,
+  storage,
+  firebaseAuth,
+} from "../../services/firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useAuthContext } from "../../context/AuthContextProvider";

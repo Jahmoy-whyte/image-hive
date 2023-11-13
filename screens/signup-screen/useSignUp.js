@@ -2,8 +2,8 @@ import { useState } from "react";
 import inputValidater from "../../utils/inputValidater";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
-import { signUp } from "../../firebase/queries/usersQuery";
-import { firebaseAuth } from "../../firebase/firebaseConfig";
+import { fb_signUp } from "../../services/firebase/queries/auth";
+import { firebaseAuth } from "../../services/firebase/firebaseConfig";
 
 const useSignUp = () => {
   const nav = useNavigation();
@@ -43,14 +43,12 @@ const useSignUp = () => {
 
     setIsLoading(true);
     try {
-      await signUp(
+      await fb_signUp(
         firebaseAuth,
         textBoxValue.email.trim(),
         textBoxValue.password.trim()
       );
-
-      // sign up successfull
-      //nav.navigate("verify-email");
+      nav.navigate("verify-email");
     } catch (error) {
       showToast().error("", error.message);
     } finally {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { useAuthContext } from "../../context/AuthContextProvider";
 import { collection, getDocs, startAfter } from "firebase/firestore";
-import { db } from "../../firebase/firebaseConfig";
+import { db } from "../../services/firebase/firebaseConfig";
 import { doc, getDoc, query, limit, orderBy } from "firebase/firestore";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
