@@ -1,18 +1,12 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useState, useReducer, useEffect } from "react";
-import {
-  doc,
-  getDoc,
-  collection,
-  getDocs,
-  limit,
-  query,
-} from "firebase/firestore";
-import { db } from "../../services/firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
+import { fb_getProfile } from "../../services/firebase/functions/users_collection";
+import { fb_getComments } from "../../services/firebase/functions/comments_subCollection";
 
 const useImageDetail = () => {
   const route = useRoute();
+  const nav = useNavigation();
 
   const imageData = route.params.imageData;
 
@@ -24,6 +18,8 @@ const useImageDetail = () => {
     isError: null,
     isSaved: false,
     isFollowing: false,
+    showModel: false,
+    commentTextBox: "",
   };
 
   const ACTIONS = {
@@ -32,10 +28,14 @@ const useImageDetail = () => {
     set_is_Loading_Profile: "set_is_Loading_Profile",
     set_is_error: "set_is_error",
     set_is_Loading_Comments: "set_is_Loading_Comments",
+    retry: "retry",
+    set_showModel: "set_showModel",
   };
 
   const reducer = (state, action) => {
     switch (action.type) {
+      case "retry":
+        return initialState;
       case "set_comments":
         return { ...state, comments: action.payload };
       case "set_profile_data":
@@ -44,6 +44,8 @@ const useImageDetail = () => {
         return { ...state, isLoadingProfile: action.payload };
       case "set_is_Loading_Comments":
         return { ...state, isLoadingComments: action.payload };
+      case "set_showModel":
+        return { ...state, showModel: action.payload };
       case "set_is_error":
         return { ...state, isError: action.payload };
 
@@ -59,12 +61,17 @@ const useImageDetail = () => {
     getComments();
   }, []);
 
+  const retry = () => {
+    // state state back to inital state
+    dispatch({ type: ACTIONS.retry });
+    getProfile();
+    getComments();
+  };
+
   const getProfile = async () => {
     try {
-      const docRef = doc(db, "users", imageData.userId);
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) throw new Error("document not found");
+      const docSnap = await fb_getProfile(imageData.userId);
+      if (!docSnap.exists()) throw new Error("user not found");
       dispatch({ type: ACTIONS.set_profile_data, payload: docSnap.data() });
     } catch (error) {
       showToast().error("", error.message);
@@ -74,49 +81,22 @@ const useImageDetail = () => {
     }
   };
 
-  const getComments1 = async () => {
-    try {
-      const q = query(
-        collection(db, "published", imageData.id, "comments"),
-        limit(1)
-      );
-
-      const querySnapshot = await getDocs(q);
-      const commentsArray = [];
-      querySnapshot.forEach((doc) => {
-        commentsArray.push({ id: doc.id, ...doc.data() });
-      });
-      dispatch({ type: ACTIONS.set_comments, payload: commentsArray });
-    } catch (error) {
-      showToast().error("", error.message);
-      dispatch({ type: ACTIONS.set_is_error, payload: error.message });
-    } finally {
-      dispatch({ type: ACTIONS.set_is_Loading_Comments, payload: false });
-    }
-  };
-
   const getComments = async () => {
     try {
-      const q = query(
-        collection(db, "published", imageData.id, "comments"),
-        limit(1)
-      );
-
-      const querySnapshot = await getDocs(q);
-      const commentsArray = [];
-      querySnapshot.forEach((doc) => {
-        commentsArray.push({ id: doc.id, ...doc.data() });
-      });
+      const { commentsArray } = await fb_getComments(imageData.id);
       dispatch({ type: ACTIONS.set_comments, payload: commentsArray });
     } catch (error) {
       showToast().error("", error.message);
-      dispatch({ type: ACTIONS.set_is_error, payload: error.message });
+      dispatch({
+        type: ACTIONS.set_is_error,
+        payload: "error occurred whilst getting comments please try agian",
+      });
     } finally {
       dispatch({ type: ACTIONS.set_is_Loading_Comments, payload: false });
     }
   };
 
-  return { imageData, state, dispatch };
+  return { imageData, state, dispatch, retry };
 };
 
 export default useImageDetail;

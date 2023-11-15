@@ -1,21 +1,14 @@
 import { useRoute } from "@react-navigation/native";
-import {
-  collection,
-  getDocs,
-  doc,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+
 import { useEffect, useState } from "react";
 
-import {
-  db,
-  storage,
-  firebaseAuth,
-} from "../../services/firebase/firebaseConfig";
+import { firebaseAuth } from "../../services/firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 import { useAuthContext } from "../../context/AuthContextProvider";
+import { fb_getCategories } from "../../services/firebase/queries/categories_collection";
+import { fb_uploadProfileImage } from "../../services/firebase/queries/imageUpload";
+import { fb_createProfile } from "../../services/firebase/queries/users_collection";
 
 const useSelectCategories = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,21 +21,12 @@ const useSelectCategories = () => {
   const userId = firebaseAuth.currentUser.uid;
   const { image, username } = route.params;
 
-  console.log(selected);
-
   useEffect(() => {
     const getCategories = async () => {
-      const querySnapshot = await getDocs(collection(db, "categories"));
-      const array = [];
-      querySnapshot.forEach((doc) => {
-        array.push({ id: doc.id, ...doc.data() });
-      });
-
-      console.log(array);
-      setCategories(array);
+      const categories = await fb_getCategories();
+      setCategories(categories);
       setIsLoading(false);
     };
-
     getCategories();
   }, []);
 
@@ -59,31 +43,12 @@ const useSelectCategories = () => {
     }
   };
 
-  const uploadImage = async () => {
-    if (!image) return null;
-    const res = await fetch(image);
-    const imageblob = await res.blob();
-    const storageRef = ref(storage, `Profile-Image/${userId}`);
-    // 'file' comes from the Blob or File API
-    await uploadBytes(storageRef, imageblob);
-    const imageUrl = await getDownloadURL(storageRef);
-    return imageUrl;
-  };
-
   const createProfile = async () => {
     setButtonIsLoading(true);
     try {
       if (selected.length < 3) throw new Error("Please select 3 categories");
-      const imageUrl = await uploadImage();
-      // Add a new document in collection "cities"
-      await setDoc(doc(db, "users", userId), {
-        id: userId,
-        username: username,
-        categories: selected,
-        profileImage: imageUrl,
-        bio: "",
-        timeStamp: serverTimestamp(),
-      });
+      const imageUrl = await fb_uploadProfileImage(userId, image);
+      await fb_createProfile(userId, username, selected, imageUrl);
       // getProfile will get and set the user obj in auth context as well as
       // navigate to the signed in stack on profile creation
       await getProfile(userId);

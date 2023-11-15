@@ -5,7 +5,7 @@ import { firebaseAuth, db } from "../services/firebase/firebaseConfig";
 
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { showToast } from "../utils/toastLib";
-import { fb_getProfile } from "../services/firebase/queries/users_collection";
+import { fb_getProfile } from "../services/firebase/functions/users_collection";
 const AuthContext = createContext();
 export const AUTH_STATES = {
   signedIn: "signed-in",

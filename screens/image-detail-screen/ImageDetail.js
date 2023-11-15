@@ -20,15 +20,13 @@ import Animated from "react-native-reanimated";
 import useImageDetail from "./useImageDetail";
 import ActionBarSkeleton from "./components/ActionBarSkeleton";
 import CommentsSkeleton from "./components/CommentsSkeleton";
+import ErrorView from "../../components/ErrorView";
+import CommentModel from "../../components/CommentModel";
 const ImageDetail = ({ navigation }) => {
-  const { imageData, state, dispatch } = useImageDetail();
+  const { imageData, state, dispatch, retry } = useImageDetail();
 
   if (state.isError) {
-    return (
-      <View className="mt-11">
-        <Text>{state.isError}</Text>
-      </View>
-    );
+    return <ErrorView message={state.isError} onPress={retry} />;
   }
 
   return (
@@ -47,8 +45,16 @@ const ImageDetail = ({ navigation }) => {
           {state.isLoadingComments ? (
             <CommentsSkeleton />
           ) : (
-            <Comments comments={state.comments} />
+            <Comments
+              comments={state.comments}
+              onPress={() =>
+                navigation.navigate("comments", {
+                  imageId: imageData.id,
+                })
+              }
+            />
           )}
+          <CommentModel />
         </View>
       </ScrollView>
     </>

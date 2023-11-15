@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useReducer, useState } from "react";
 import { useAuthContext } from "../../context/AuthContextProvider";
-import { collection, getDocs, startAfter } from "firebase/firestore";
-import { db } from "../../services/firebase/firebaseConfig";
-import { doc, getDoc, query, limit, orderBy } from "firebase/firestore";
+
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
+import {
+  fb_getinitialImages,
+  fb_loadMoreImages,
+} from "../../services/firebase/functions/published_collection";
 
 const useHome = () => {
   const { user } = useAuthContext();
@@ -27,10 +29,14 @@ const useHome = () => {
     set_current_category: "set_current_category",
     set_last_visible_doc: "set_last_visible_doc",
     set_is_error: "set_is_error",
+
+    retry: "retry",
   };
 
   const reducer = (state, action) => {
     switch (action.type) {
+      case "retry":
+        return initialState;
       case "set_is_loading":
         return { ...state, isLoading: action.payload };
       case "set_image_array":
@@ -73,28 +79,29 @@ const useHome = () => {
     getinitialImages();
   }, []);
 
+  const retry = () => {
+    // reset reducer state to initial state
+    dispatch({
+      type: ACTIONS.retry,
+    });
+    getinitialImages();
+  };
+
   const getinitialImages = async () => {
     try {
-      const docQuery = query(
-        collection(db, "published"),
-        limit(4),
-        orderBy("timeStamp")
-      );
-      const documentSnapshots = await getDocs(docQuery);
-      const imageArray = [];
-      documentSnapshots.forEach((doc) => {
-        imageArray.push({ id: doc.id, ...doc.data() });
-      });
+      const { imageArray, lastVisable } = await fb_getinitialImages();
 
       //get last doc from query for pagination
-      const lastVisable =
-        documentSnapshots.docs[documentSnapshots.docs.length - 1];
       // save lastvisibale in state
+
       dispatch({ type: ACTIONS.set_last_visible_doc, payload: lastVisable });
       //set image array
       dispatch({ type: ACTIONS.set_image_array, payload: imageArray });
     } catch (error) {
-      dispatch({ type: ACTIONS.set_is_error, payload: true });
+      dispatch({
+        type: ACTIONS.set_is_error,
+        payload: "error occurred while getting images",
+      });
       showToast().error("", error.message);
     }
   };
@@ -111,35 +118,23 @@ const useHome = () => {
     dispatch({ type: ACTIONS.set_is_loading_more, payload: true });
 
     try {
-      const docQuery = query(
-        collection(db, "published"),
-        limit(4),
-        orderBy("timeStamp"),
-        startAfter(state.lastVisibleDoc)
+      const { imageArray, lastVisable } = await fb_loadMoreImages(
+        state.lastVisibleDoc
       );
-      const documentSnapshots = await getDocs(docQuery);
-
-      //if documentSnapshots is empty  set isDocEnd to true to avoid unnecessary firebase requests
-      if (documentSnapshots.empty) {
+      //if lastvisibale  is null  set isDocEnd to true to avoid unnecessary firebase requests
+      if (!lastVisable) {
         dispatch({ type: ACTIONS.set_is_doc_end, payload: true });
         return;
       }
-
-      const imageArray = [];
-      documentSnapshots.forEach((doc) => {
-        imageArray.push({ id: doc.id, ...doc.data() });
-      });
-
-      // get last doc from query for pagination
-      const lastVisable =
-        documentSnapshots.docs[documentSnapshots.docs.length - 1];
-
       // save last visibale in state
       dispatch({ type: ACTIONS.set_last_visible_doc, payload: lastVisable });
       //set image array
       dispatch({ type: ACTIONS.set_image_array, payload: imageArray });
     } catch (error) {
-      dispatch({ type: ACTIONS.set_is_error, payload: true });
+      dispatch({
+        type: ACTIONS.set_is_error,
+        payload: "error occurred while getting images",
+      });
       showToast().error("", error.message);
     }
   };
@@ -150,7 +145,7 @@ const useHome = () => {
     });
   }, []);
 
-  return { user, state, loadMoreImages, navToDetails };
+  return { user, state, loadMoreImages, navToDetails, retry };
 };
 
 export default useHome;

@@ -13,7 +13,7 @@ import { Feather } from "@expo/vector-icons";
 import Animated from "react-native-reanimated";
 const ImageDisplay = ({ images = [] }) => {
   return images.map((image, index) => (
-    <Image source={{ uri: image }} key={index} className="w-full h-96" />
+    <Image source={{ uri: image }} key={image} className="w-full h-96" />
   ));
 };
 

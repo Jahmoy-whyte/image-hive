@@ -25,24 +25,28 @@ import testimage from "../../assets/images/testimage.png";
 import ImageCards from "./components/ImageCards";
 import ImageCardsSkeleton from "./components/ImageCardsSkeleton";
 import Heading from "./components/Heading";
+import ErrorView from "../../components/ErrorView";
 
 const Home = ({ navigation }) => {
-  const { user, state, loadMoreImages, navToDetails } = useHome();
+  const { user, state, loadMoreImages, navToDetails, retry } = useHome();
   const loadingSkeletonArray = [{ id: "id1" }, { id: "id2" }, { id: "id3" }];
 
+  if (state.isError) {
+    return <ErrorView message={state.isError} onPress={retry} />;
+  }
   return (
     <>
       <SafeContainer>
         <FlatList
-          ListHeaderComponent={() => <Heading user={user} />}
+          ListHeaderComponent={<Heading user={user} />}
           data={state.isLoading ? loadingSkeletonArray : state.imageArray}
-          ListFooterComponent={() => {
-            return state.isloadingMore ? (
+          ListFooterComponent={
+            state.isloadingMore ? (
               <View className="justify-center items-center ">
                 <ActivityIndicator color={"black"} />
               </View>
-            ) : null;
-          }}
+            ) : null
+          }
           onEndReached={loadMoreImages}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {

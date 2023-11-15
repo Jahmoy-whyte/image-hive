@@ -37,6 +37,7 @@ import { firebaseAuth, db } from "./services/firebase/firebaseConfig";
 import { serverTimestamp } from "firebase/firestore";
 
 import { collection, getDocs, addDoc } from "firebase/firestore";
+import Comments from "./screens/comments-screen/Comments";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
@@ -217,6 +218,8 @@ export default function AppNavigation() {
             <Stack.Group>
               <Stack.Screen name="bottom-tabs" component={BottomTabs} />
               <Stack.Screen name="image-detail" component={ImageDetail} />
+              <Stack.Screen name="comments" component={Comments} />
+
               <Stack.Screen name="signup" component={Myscreen} />
               <Stack.Screen name="test" component={TestScreen1} />
               <Stack.Screen name="a" component={AScreen} />
