@@ -19,7 +19,7 @@ const Login = ({ navigation }) => {
   const { isLoading, login, setTextBoxValue, textBoxValue } = useLogin();
   return (
     <>
-      <ExpoStatusBar style="light" />
+      <ExpoStatusBar style="light" translucent />
       <View className="absolute flex-1 bg-primary w-screen h-screen"></View>
       <SafeContainer>
         <ScrollView className="flex-1">

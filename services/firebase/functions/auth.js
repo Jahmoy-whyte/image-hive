@@ -21,6 +21,6 @@ export const fb_sendEmailVerification = async (auth) => {
   await sendEmailVerification(auth.currentUser);
 };
 
-export const fb_reloadCurrentUser = async () => {
+export const fb_reloadCurrentUser = async (auth) => {
   await auth.currentUser.reload();
 };

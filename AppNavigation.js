@@ -38,6 +38,7 @@ import { serverTimestamp } from "firebase/firestore";
 
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import Comments from "./screens/comments-screen/Comments";
+import ErrorView from "./components/ErrorView";
 
 const Stack = createNativeStackNavigator();
 export default function AppNavigation() {
@@ -234,7 +235,9 @@ export default function AppNavigation() {
                 component={SelectCategories}
               />
             </Stack.Group>
-          ) : null}
+          ) : (
+            <Stack.Screen name="error" component={ErrorView} />
+          )}
         </Stack.Navigator>
       </NavigationContainer>
 

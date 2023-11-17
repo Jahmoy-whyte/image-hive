@@ -7,16 +7,18 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { showToast } from "../utils/toastLib";
 import { fb_getProfile } from "../services/firebase/functions/users_collection";
 const AuthContext = createContext();
+
 export const AUTH_STATES = {
   signedIn: "signed-in",
   isLoading: "isLoading",
   signedOut: "signedOut",
   profileSetup: "profileSetup",
   verifyEmail: "verifyEmail",
+  error: "error",
 };
 const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState({
-    Bio: null,
+    bio: null,
     profileImage: null,
     id: null,
     username: null,
@@ -30,7 +32,6 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
       if (user && user.emailVerified) {
-        console.log(" usedjijjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
         getProfile(user.uid); // test if your profile exist if not navigate to setup profile
       } else {
         setCurrentAuthState(AUTH_STATES.signedOut);
@@ -48,6 +49,7 @@ const AuthContextProvider = ({ children }) => {
         setCurrentAuthState(AUTH_STATES.profileSetup);
       }
     } catch (error) {
+      setCurrentAuthState(AUTH_STATES.error);
       showToast().error("", error.message);
     }
   };

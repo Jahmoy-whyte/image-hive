@@ -16,7 +16,7 @@ import Checkbox from "expo-checkbox";
 import AuthStackHeading from "../../components/AuthStackHeading";
 import useVerifyEmail from "./useVerifiyEmail";
 const VerifyEmail = ({ navigation }) => {
-  const { buttonLoading, email, isLoading, fb_sendEmailVerification, verify } =
+  const { buttonLoading, email, isLoading, sendEmailVerification, verify } =
     useVerifyEmail();
   return (
     <>
@@ -43,7 +43,7 @@ const VerifyEmail = ({ navigation }) => {
         <Text className="font-interRegular text-sm text-center mb-5">
           Not seeing link
           <Text
-            onPress={fb_sendEmailVerification}
+            onPress={sendEmailVerification}
             className="font-interBold text-sm text-primary"
             disabled={isLoading}
           >

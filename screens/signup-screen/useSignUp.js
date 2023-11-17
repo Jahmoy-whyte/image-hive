@@ -2,7 +2,7 @@ import { useState } from "react";
 import inputValidater from "../../utils/inputValidater";
 import { showToast } from "../../utils/toastLib";
 import { useNavigation } from "@react-navigation/native";
-import { fb_signUp } from "../../services/firebase/queries/auth";
+import { fb_signUp } from "../../services/firebase/functions/auth";
 import { firebaseAuth } from "../../services/firebase/firebaseConfig";
 
 const useSignUp = () => {

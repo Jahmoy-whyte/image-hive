@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  StatusBar,
 } from "react-native";
 import SafeContainer from "../../components/SafeContainer";
 import { AntDesign } from "@expo/vector-icons";
@@ -37,6 +38,7 @@ const Home = ({ navigation }) => {
   return (
     <>
       <SafeContainer>
+        <ExpoStatusBar translucent />
         <FlatList
           ListHeaderComponent={<Heading user={user} />}
           data={state.isLoading ? loadingSkeletonArray : state.imageArray}

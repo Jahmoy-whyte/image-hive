@@ -6,7 +6,7 @@ import { useAuthContext } from "../../context/AuthContextProvider";
 import {
   fb_reloadCurrentUser,
   fb_sendEmailVerification,
-} from "../../services/firebase/queries/auth";
+} from "../../services/firebase/functions/auth";
 
 const useVerifyEmail = () => {
   const route = useRoute();
@@ -22,11 +22,23 @@ const useVerifyEmail = () => {
 
   ///
 
+  const sendEmailVerification = async () => {
+    try {
+      setIsLoading(true);
+      await fb_sendEmailVerification(auth);
+      showToast().info("", "Link sent");
+    } catch (error) {
+      showToast().error("", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const verify = async () => {
     setButtonLoading(true);
 
     try {
-      await fb_reloadCurrentUser();
+      await fb_reloadCurrentUser(auth);
 
       const verified = auth.currentUser.emailVerified;
       if (!verified) return showToast().error("", "Email is not Verified");
@@ -42,7 +54,7 @@ const useVerifyEmail = () => {
   };
 
   return {
-    fb_sendEmailVerification,
+    sendEmailVerification,
     verify,
     isLoading,
     buttonLoading,

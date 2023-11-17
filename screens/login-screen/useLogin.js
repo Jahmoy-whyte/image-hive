@@ -3,7 +3,7 @@ import { showToast } from "../../utils/toastLib";
 import { useState } from "react";
 import inputValidater from "../../utils/inputValidater";
 import { useNavigation } from "@react-navigation/native";
-import { fb_login } from "../../services/firebase/queries/auth";
+import { fb_login } from "../../services/firebase/functions/auth";
 const useLogin = () => {
   const nav = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +36,12 @@ const useLogin = () => {
         userLogin.password
       );
       if (user.emailVerified) return;
+
+      setIsLoading(false);
       nav.navigate("verify-email");
     } catch (error) {
       const code = error.code;
       showToast().error("", code);
-    } finally {
-      setIsLoading(false);
     }
   };
 

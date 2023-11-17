@@ -1,4 +1,4 @@
-import { firebaseAuth, db } from "../firebaseConfig";
+import { db } from "../firebaseConfig";
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
 
 export const fb_getProfile = async (id) => {

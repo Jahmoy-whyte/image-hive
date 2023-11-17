@@ -23,9 +23,9 @@ import CommentsSkeleton from "./components/CommentsSkeleton";
 import ErrorView from "../../components/ErrorView";
 import CommentModel from "../../components/CommentModel";
 const ImageDetail = ({ navigation }) => {
-  const { imageData, state, dispatch, retry } = useImageDetail();
+  const { imageData, state, dispatch, retry, commentHook } = useImageDetail();
 
-  if (state.isError) {
+  if (state.isError || commentHook.state.error) {
     return <ErrorView message={state.isError} onPress={retry} />;
   }
 
@@ -42,11 +42,11 @@ const ImageDetail = ({ navigation }) => {
             <ActionBar state={{ ...state, ...imageData }} />
           )}
 
-          {state.isLoadingComments ? (
+          {commentHook.state.isLoading ? (
             <CommentsSkeleton />
           ) : (
             <Comments
-              comments={state.comments}
+              comments={commentHook.state.comments}
               onPress={() =>
                 navigation.navigate("comments", {
                   imageId: imageData.id,

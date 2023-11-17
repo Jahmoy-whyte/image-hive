@@ -6,9 +6,9 @@ import { firebaseAuth } from "../../services/firebase/firebaseConfig";
 import { showToast } from "../../utils/toastLib";
 
 import { useAuthContext } from "../../context/AuthContextProvider";
-import { fb_getCategories } from "../../services/firebase/queries/categories_collection";
-import { fb_uploadProfileImage } from "../../services/firebase/queries/imageUpload";
-import { fb_createProfile } from "../../services/firebase/queries/users_collection";
+import { fb_getCategories } from "../../services/firebase/functions/categories_collection";
+import { fb_uploadProfileImage } from "../../services/firebase/functions/imageUpload";
+import { fb_createProfile } from "../../services/firebase/functions/users_collection";
 
 const useSelectCategories = () => {
   const [isLoading, setIsLoading] = useState(true);
