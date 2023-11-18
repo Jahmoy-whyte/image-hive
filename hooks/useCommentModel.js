@@ -3,9 +3,11 @@ import { showToast } from "../utils/toastLib";
 import {
   fb_addComment,
   fb_getComments,
+  fb_loadMoreComments,
 } from "../services/firebase/functions/comments_subCollection";
+import { useAuthContext } from "../context/AuthContextProvider";
 
-const useCommentModel = (imageId, userId) => {
+const useCommentModel = (imageId) => {
   const textBoxRef = useRef();
   const initialState = {
     modelTextBox: "",
@@ -27,6 +29,8 @@ const useCommentModel = (imageId, userId) => {
     set_error: "set_error",
     set_isDocEnd: "set_isDocEnd",
     reset_state: "reset_state",
+    addUserComment: "addUserComment",
+    set_comments: "set_comments",
   };
 
   const reducer = (state, action) => {
@@ -42,6 +46,29 @@ const useCommentModel = (imageId, userId) => {
           isLoadingMore: false,
         };
       }
+
+      case "set_comments": {
+        return {
+          ...state,
+          comments: action.payload,
+        };
+      }
+
+      case "addUserComment": {
+        const comment = action.payload; // is a obj with { comment, userId, timeStamp }
+        return {
+          ...state,
+          modelTextBox: "",
+          comments: [comment, ...state.comments],
+        };
+      }
+
+      case "set_modelTextBox":
+        return { ...state, modelTextBox: action.payload };
+
+      case "set_modelVisible":
+        return { ...state, modelVisible: action.payload, modelTextBox: "" };
+
       case "set_isDocEnd":
         return { ...state, isDocEnd: action.payload };
 
@@ -58,12 +85,35 @@ const useCommentModel = (imageId, userId) => {
   };
 
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { user } = useAuthContext();
+
+  /*
+comment
+timeStamp
+userId
+*/
 
   const addComment = async () => {
+    const prevCommentArray = [...state.comments]; // make a copy  of the current array
     try {
-      await fb_addComment(imageId, userId, modelData.textBox);
+      // add user comment to the array
+      dispatch({
+        type: ACTIONS.addUserComment,
+        payload: {
+          comment: state.modelTextBox,
+          userId: user.id,
+          timeStamp: Date.now(),
+        },
+      });
+      // send user comment to the database
+      await fb_addComment(imageId, user.id, state.modelTextBox);
     } catch (error) {
       showToast().error("", "error occourred adding comment");
+      // in case of error revert comment array to the copied array
+      dispatch({
+        type: ACTIONS.set_comments,
+        payload: prevCommentArray,
+      });
     }
   };
 
@@ -98,7 +148,7 @@ const useCommentModel = (imageId, userId) => {
     if (state.isLoading || state.isLoadingMore || state.isDocEnd) return;
 
     // show loading inicator
-    dispatch({ type: ACTIONS.isLoadingMore, payload: true });
+    dispatch({ type: ACTIONS.set_isLoadingMore, payload: true });
 
     try {
       const { lastVisible, commentsArray } = await fb_loadMoreComments(
@@ -128,7 +178,17 @@ const useCommentModel = (imageId, userId) => {
     }
   };
 
+  const setModelTextBox = (value) => {
+    dispatch({ type: ACTIONS.set_modelTextBox, payload: value });
+  };
+
+  const setModelVisible = (value) => {
+    dispatch({ type: ACTIONS.set_modelVisible, payload: value }); // sets  modelVisible and modelTextBox to empty string
+  };
+
   return {
+    setModelTextBox,
+    setModelVisible,
     addComment,
     loadMoreComments,
     getComments,

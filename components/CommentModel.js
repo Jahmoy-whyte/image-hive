@@ -1,6 +1,19 @@
-import { View, Modal, TextInput, Pressable } from "react-native";
-
-const CommentModel = ({ onChangeHandler, visible = false, setVisible }) => {
+import {
+  View,
+  Modal,
+  TextInput,
+  Pressable,
+  Touchable,
+  TouchableOpacity,
+} from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+const CommentModel = ({
+  onChangeHandler,
+  visible = false,
+  setVisible,
+  submitComment,
+  modelTextBoxValue = "",
+}) => {
   return (
     <Modal
       transparent
@@ -17,7 +30,14 @@ const CommentModel = ({ onChangeHandler, visible = false, setVisible }) => {
             className="flex-1"
             placeholder="Leave A comment"
             onChangeText={(value) => onChangeHandler(value)}
+            value={modelTextBoxValue}
           />
+          <TouchableOpacity
+            onPress={submitComment}
+            className="h-10  w-10 rounded-[10px] justify-center items-center bg-primary"
+          >
+            <AntDesign name="arrowright" size={24} color="white" />
+          </TouchableOpacity>
         </View>
       </Pressable>
     </Modal>

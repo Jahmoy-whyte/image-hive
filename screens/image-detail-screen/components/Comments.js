@@ -14,7 +14,11 @@ import { Feather } from "@expo/vector-icons";
 
 import testimage from "../../../assets/images/testimage.png";
 import TextBox from "../../../components/TextBox";
-const Comments = ({ comments = [], onPress }) => {
+const Comments = ({
+  comments = [],
+  onPressViewAll,
+  setCommentModelVisiblity,
+}) => {
   return (
     <View className="p-3">
       {comments.length < 1 ? (
@@ -29,7 +33,7 @@ const Comments = ({ comments = [], onPress }) => {
             <Text className="font-interBold text-base ">Comments</Text>
             <Text
               className="font-interBold text-xs text-primary my-3"
-              onPress={onPress}
+              onPress={onPressViewAll}
             >
               View All
             </Text>
@@ -47,7 +51,10 @@ const Comments = ({ comments = [], onPress }) => {
         </View>
       )}
 
-      <Pressable className="justify-center  border-gray-300 border-[1px] px-3 min-h-[46px] rounded-3xl my-3">
+      <Pressable
+        onPress={() => setCommentModelVisiblity(true)}
+        className="justify-center  border-gray-300 border-[1px] px-3 min-h-[46px] rounded-3xl my-3"
+      >
         <Text className="text-xs font-interRegular text-gray-400">
           Leave A comment
         </Text>

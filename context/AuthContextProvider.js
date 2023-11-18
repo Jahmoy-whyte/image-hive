@@ -59,7 +59,13 @@ const AuthContextProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ currentAuthState, user, getProfile }}>
+    <AuthContext.Provider
+      value={{
+        currentAuthState,
+        user,
+        getProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -67,7 +73,11 @@ const AuthContextProvider = ({ children }) => {
 
 export const useAuthContext = () => {
   const { currentAuthState, user, getProfile } = useContext(AuthContext);
-  return { currentAuthState, user, getProfile };
+  return {
+    currentAuthState,
+    user,
+    getProfile,
+  };
 };
 
 export default AuthContextProvider;

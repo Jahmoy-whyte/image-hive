@@ -1,8 +1,10 @@
 import { View, Image, Text } from "react-native";
 
 import testimage from "../../../assets/images/testimage.png";
+import { memo } from "react";
 
 const CommentCard = ({ comment }) => {
+  console.log("wwwwwwwwwwww");
   return (
     <View className="flex-row  border-b-[1px] border-b-gray-300 py-3">
       <Image source={testimage} className="w-8 h-8 rounded-[40px]" />
@@ -14,4 +16,4 @@ const CommentCard = ({ comment }) => {
   );
 };
 
-export default CommentCard;
+export default memo(CommentCard);

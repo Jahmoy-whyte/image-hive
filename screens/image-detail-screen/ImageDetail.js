@@ -46,15 +46,22 @@ const ImageDetail = ({ navigation }) => {
             <CommentsSkeleton />
           ) : (
             <Comments
+              setCommentModelVisiblity={commentHook.setModelVisible}
               comments={commentHook.state.comments}
-              onPress={() =>
+              onPressViewAll={() =>
                 navigation.navigate("comments", {
                   imageId: imageData.id,
                 })
               }
             />
           )}
-          <CommentModel />
+          <CommentModel
+            visible={commentHook.state.modelVisible}
+            onChangeHandler={commentHook.setModelTextBox}
+            setVisible={commentHook.setModelVisible}
+            submitComment={commentHook.addComment}
+            modelTextBoxValue={commentHook.state.modelTextBox}
+          />
         </View>
       </ScrollView>
     </>

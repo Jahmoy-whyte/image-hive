@@ -15,7 +15,7 @@ import { db } from "../firebaseConfig";
 export const fb_getComments = async (imageId, limitNumber = 1) => {
   const q = query(
     collection(db, "published", imageId, "comments"),
-    orderBy("timeStamp"),
+    orderBy("timeStamp", "desc"),
     limit(limitNumber)
   );
 
@@ -36,7 +36,7 @@ export const fb_loadMoreComments = async (
   const q = query(
     collection(db, "published", imageId, "comments"),
     limit(limitNumber),
-    orderBy("timeStamp"),
+    orderBy("timeStamp", "desc"),
     startAfter(lastVisibleDoc)
   );
 

@@ -12,7 +12,7 @@ export const fb_getinitialImages = async () => {
   const docQuery = query(
     collection(db, "published"),
     limit(4),
-    orderBy("timeStamp")
+    orderBy("timeStamp", "desc")
   );
   const documentSnapshots = await getDocs(docQuery);
   const imageArray = [];
@@ -30,7 +30,7 @@ export const fb_loadMoreImages = async (lastVisibleDoc) => {
   const docQuery = query(
     collection(db, "published"),
     limit(4),
-    orderBy("timeStamp"),
+    orderBy("timeStamp", "desc"),
     startAfter(lastVisibleDoc)
   );
   const documentSnapshots = await getDocs(docQuery);

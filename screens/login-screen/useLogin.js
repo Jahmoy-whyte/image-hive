@@ -41,6 +41,8 @@ const useLogin = () => {
       nav.navigate("verify-email");
     } catch (error) {
       const code = error.code;
+
+      setIsLoading(false);
       showToast().error("", code);
     }
   };
