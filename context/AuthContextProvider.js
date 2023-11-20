@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import LoadingIndicator from "../components/LoadingIndicator";
-import { firebaseAuth, db } from "../services/firebase/firebaseConfig";
-
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { firebaseAuth } from "../services/firebase/firebaseConfig";
 import { showToast } from "../utils/toastLib";
 import { fb_getProfile } from "../services/firebase/functions/users_collection";
+
 const AuthContext = createContext();
 
 export const AUTH_STATES = {

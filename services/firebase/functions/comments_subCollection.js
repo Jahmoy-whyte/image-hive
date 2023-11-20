@@ -1,6 +1,7 @@
 import {
   doc,
   getDoc,
+  updateDoc,
   addDoc,
   collection,
   getDocs,
@@ -9,6 +10,7 @@ import {
   startAfter,
   orderBy,
   serverTimestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
@@ -22,7 +24,7 @@ export const fb_getComments = async (imageId, limitNumber = 1) => {
   const querySnapshot = await getDocs(q);
   const commentsArray = [];
   querySnapshot.forEach((doc) => {
-    commentsArray.push({ id: doc.id, ...doc.data() });
+    commentsArray.push({ docId: doc.id, ...doc.data() });
   });
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
   return { lastVisible, commentsArray };
@@ -45,7 +47,7 @@ export const fb_loadMoreComments = async (
   if (querySnapshot.empty) return { lastVisible: null, commentsArray };
 
   querySnapshot.forEach((doc) => {
-    commentsArray.push({ id: doc.id, ...doc.data() });
+    commentsArray.push({ docId: doc.id, ...doc.data() });
   });
 
   const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -60,5 +62,17 @@ export const fb_addComment = async (imageId, userId, comment) => {
       comment: comment,
       timeStamp: serverTimestamp(),
     }
+  );
+};
+
+export const fb_deleteComment = async (imageId, commentId) => {
+  await deleteDoc(doc(db, "published", imageId, "comments", commentId));
+};
+
+export const fb_updateComment = async (imageId, commentId, comment) => {
+  await updateDoc(
+    doc(db, "published", imageId, "comments", commentId, {
+      comment: comment,
+    })
   );
 };

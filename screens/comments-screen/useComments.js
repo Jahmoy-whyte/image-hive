@@ -16,12 +16,12 @@ import { useAuthContext } from "../../context/AuthContextProvider";
 const useComments = () => {
   const initalCommentLimitNumber = 5;
   const placeHolderCommentsArray = [
-    { timeStamp: 1 },
-    { timeStamp: 2 },
-    { timeStamp: 3 },
-    { timeStamp: 4 },
-    { timeStamp: 5 },
-    { timeStamp: 6 },
+    { id: 1 },
+    { id: 2 },
+    { id: 3 },
+    { id: 4 },
+    { id: 5 },
+    { id: 6 },
   ];
   const route = useRoute();
   const imageId = route.params.imageId;
@@ -76,6 +76,7 @@ const useComments = () => {
     retry,
     commentHook,
     placeHolderCommentsArray,
+    user,
   };
 };
 

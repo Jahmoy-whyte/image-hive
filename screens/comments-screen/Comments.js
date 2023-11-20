@@ -21,6 +21,7 @@ const Comments = () => {
     state,
     commentHook,
     placeHolderCommentsArray,
+    user,
   } = useComments();
 
   if (state.error || commentHook.state.error) {
@@ -44,7 +45,7 @@ const Comments = () => {
               </View>
             ) : null
           }
-          keyExtractor={(item) => item.timeStamp}
+          keyExtractor={(item) => item.docId}
           onEndReached={() => commentHook.loadMoreComments(1)}
           className="px-3"
           data={
@@ -56,7 +57,12 @@ const Comments = () => {
             return commentHook.state.isLoading ? (
               <CommentCardSkeleton />
             ) : (
-              <CommentCard comment={item} />
+              <CommentCard
+                comment={item}
+                userId={user.id}
+                deleteComment={commentHook.deleteComment}
+                updateComment={commentHook.updateComment}
+              />
             );
           }}
         />

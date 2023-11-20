@@ -1,7 +1,8 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { showToast } from "../utils/toastLib";
 import {
   fb_addComment,
+  fb_deleteComment,
   fb_getComments,
   fb_loadMoreComments,
 } from "../services/firebase/functions/comments_subCollection";
@@ -29,7 +30,9 @@ const useCommentModel = (imageId) => {
     set_error: "set_error",
     set_isDocEnd: "set_isDocEnd",
     reset_state: "reset_state",
-    addUserComment: "addUserComment",
+    addComment: "addComment",
+    deleteComment: "deleteComment",
+    updateComment: "updateComment",
     set_comments: "set_comments",
   };
 
@@ -54,12 +57,37 @@ const useCommentModel = (imageId) => {
         };
       }
 
-      case "addUserComment": {
+      case "addComment": {
         const comment = action.payload; // is a obj with { comment, userId, timeStamp }
         return {
           ...state,
           modelTextBox: "",
           comments: [comment, ...state.comments],
+        };
+      }
+
+      case "deleteComment": {
+        const timeStamp = action.payload; // is a obj with { comment, userId, timeStamp }
+        return {
+          ...state,
+          modelTextBox: "",
+          comments: state.comments.filter(
+            (comment) => comment.timeStamp != timeStamp
+          ),
+        };
+      }
+
+      case "updateComment": {
+        const commentData = action.payload; // is a obj with { comment, userId, timeStamp }
+        return {
+          ...state,
+          modelTextBox: "",
+          comments: state.comments.map((comment) => {
+            return comment.userId + comment.timeStamp ==
+              commentData.userId + commentData.timeStamp
+              ? { ...comment, comment: commentData.comment }
+              : comment;
+          }),
         };
       }
 
@@ -98,7 +126,7 @@ userId
     try {
       // add user comment to the array
       dispatch({
-        type: ACTIONS.addUserComment,
+        type: ACTIONS.addComment,
         payload: {
           comment: state.modelTextBox,
           userId: user.id,
@@ -109,6 +137,50 @@ userId
       await fb_addComment(imageId, user.id, state.modelTextBox);
     } catch (error) {
       showToast().error("", "error occourred adding comment");
+      // in case of error revert comment array to the copied array
+      dispatch({
+        type: ACTIONS.set_comments,
+        payload: prevCommentArray,
+      });
+    }
+  };
+
+  const deleteComment = useCallback(async (timeStamp) => {
+    const prevCommentArray = [...state.comments]; // make a copy  of the current array
+    try {
+      // delete comment from array
+      dispatch({
+        type: ACTIONS.deleteComment,
+        payload: timeStamp,
+      });
+      // delete user comment to the database
+      //  await fb_deleteComment(imageId, user.id, state.modelTextBox);
+    } catch (error) {
+      showToast().error("", "error occourred deleting comment");
+      // in case of error revert comment array to the copied array
+      dispatch({
+        type: ACTIONS.set_comments,
+        payload: prevCommentArray,
+      });
+    }
+  }, []);
+
+  const updateComment = async (userId, timeStamp, comment) => {
+    const prevCommentArray = [...state.comments]; // make a copy  of the current array
+    try {
+      // delete comment from array
+      dispatch({
+        type: ACTIONS.updateComment,
+        payload: {
+          userId: userId,
+          timeStamp: timeStamp,
+          comment: comment,
+        },
+      });
+      // delete user comment to the database
+      //  await fb_deleteComment(imageId, user.id, state.modelTextBox);
+    } catch (error) {
+      showToast().error("", "error occourred updating comment");
       // in case of error revert comment array to the copied array
       dispatch({
         type: ACTIONS.set_comments,
@@ -193,6 +265,8 @@ userId
     loadMoreComments,
     getComments,
     resetState,
+    deleteComment,
+    updateComment,
     state: {
       modelTextBox: state.modelTextBox,
       lastVisibleDoc: state.lastVisibleDoc,
