@@ -8,6 +8,7 @@ import { toastConfig } from "./utils/toastLib";
 
 import AuthContextProvider from "./context/AuthContextProvider";
 import AppNavigation from "./AppNavigation";
+import TestAnimations from "./test/TestAnimations";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -23,10 +24,7 @@ export default function App() {
 
   return (
     <>
-      <AuthContextProvider>
-        <AppNavigation />
-      </AuthContextProvider>
-      <Toast config={toastConfig} />
+      <TestAnimations />
     </>
   );
 }
