@@ -22,9 +22,5 @@ export default function App() {
     return null;
   }
 
-  return (
-    <>
-      <TestAnimations />
-    </>
-  );
+  return <TestAnimations />;
 }
