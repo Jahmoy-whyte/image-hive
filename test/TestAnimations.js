@@ -4,103 +4,191 @@ import {
   TouchableOpacisheetY,
   Text,
   styleSheet,
-  Animated,
   Pressable,
   Easing,
   PanResponder,
   useWindowDimensions,
   StatusBar,
+  Platform,
+  Dimensions,
+  Button,
+  Animated,
+  FlatList,
+  Touchable,
+  TouchableOpacity,
 } from "react-native";
 
 const TestAnimations = () => {
-  const dimensions = useWindowDimensions();
-  const BOTTOM_SHEET_INITAL_VALUE = 0;
-  const BOTTOM_SHEET_HEIGHT = dimensions.height / 1.1;
-  const MAX_Y_STOPING_POINT = dimensions.height - BOTTOM_SHEET_HEIGHT;
-  const sheetY = useRef(new Animated.Value(BOTTOM_SHEET_INITAL_VALUE)).current;
-  const endPostion = useRef(BOTTOM_SHEET_INITAL_VALUE);
+  const SCREEN_HEIGHT = Dimensions.get("window").height;
+  const BOTTOM_SHEET_HEIGHT = SCREEN_HEIGHT / 1.5;
+  const CLOSED_VALUE = BOTTOM_SHEET_HEIGHT - 10;
+  const MAX_Y = 0;
+  const VELOCITY_THRESHOLD = 2;
+  const translateY = useRef(new Animated.Value(CLOSED_VALUE)).current;
+  const previousY = useRef(CLOSED_VALUE);
 
-  useEffect(() => {}, []);
-  const resetSqure = () => {
-    sheetY.setValue(0);
-    sheetY.extractOffset();
-  };
+  const scroll = useRef(0);
+  const [isEnabled, setIsEnabled] = useState(false);
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
+    // onStartShouldSetPanResponder: (_, { dy }) => {
+    //   //console.log(dy);
+    //   return true;
+    // },
+    // onStartShouldSetPanResponderCapture: () => true,
+    onMoveShouldSetPanResponder: (_, { dy }) => {
+      if (previousY.current == BOTTOM_SHEET_HEIGHT - 10) {
+        setIsEnabled(true);
+        return true;
+      }
+      const bool = dy <= 0 && scroll.current == 0;
 
-    onPanResponderStart: (event) => {
-      sheetY.setOffset(endPostion.current);
+      if (bool) {
+        // if scroll up when is full extend
+        setIsEnabled(true);
+        console.log("wwwwwwwwwwwwwwww");
+        return false;
+      }
     },
+    // onMoveShouldSetPanResponderCapture: () => true,
+    onPanResponderTerminationRequest: (evt, gestureState) => false,
+    onPanResponderStart: (_, { dy }) => {},
     onPanResponderMove: (_, { dy }) => {
-      //      if (endPostion.current + dy <= MAX_Y_STOPING_POINT) return;
-
-      console.log(sheetY);
-      sheetY.setValue(dy);
+      //console.log(previousY.current + dy);
+      translateY.setValue(previousY.current + dy);
     },
+    onPanResponderEnd: (_, { dy, vy }) => {
+      const currentPosition = previousY.current + dy;
+      const velocity = vy;
+      const lessThanHalf = currentPosition < BOTTOM_SHEET_HEIGHT / 2;
+      const graterThanHalf = currentPosition > BOTTOM_SHEET_HEIGHT / 2;
 
-    onPanResponderEnd: (_, { dy }) => {
-      if (endPostion.current + dy <= MAX_Y_STOPING_POINT) {
-        endPostion.current = MAX_Y_STOPING_POINT;
-      } else {
-        endPostion.current += dy;
+      if (currentPosition <= MAX_Y) {
+        animateToPosition(MAX_Y);
+        return;
       }
 
-      return;
+      if (lessThanHalf || (lessThanHalf && velocity > -VELOCITY_THRESHOLD)) {
+        animateToPosition(MAX_Y);
+        return;
+      }
 
-      Animated.spring(sheetY, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start();
+      if (graterThanHalf || (graterThanHalf && velocity > VELOCITY_THRESHOLD)) {
+        animateToPosition(CLOSED_VALUE);
+        return;
+      }
+
+      //previousY.current = currentPosition;
     },
   });
 
-  return (
-    <>
-      <View
-        style={{
-          flex: 1,
+  const animateToPosition = (value) => {
+    previousY.current = value;
+    Animated.spring(translateY, {
+      toValue: value,
+      useNativeDriver: true,
+    }).start();
+  };
 
-          backgroundColor: "green",
-          padding: 5,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={{
+  return (
+    <View style={[{ backgroundColor: "green", flex: 1 }]}>
+      <Animated.View
+        style={[
+          {
+            position: "absolute",
+            height: SCREEN_HEIGHT,
+            width: "100%",
+            backgroundColor: "pink",
+            flex: 1,
+            opacity: translateY.interpolate({
+              inputRange: [MAX_Y, BOTTOM_SHEET_HEIGHT - 10],
+              outputRange: [1, 0],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+      ></Animated.View>
+      <View style={{ marginTop: 20 }}></View>
+      <Button title="open" onPress={() => animateToPosition(MAX_Y)} />
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[
+          {
+            backgroundColor: "red",
             height: BOTTOM_SHEET_HEIGHT,
             width: "100%",
-            backgroundColor: "gray",
             position: "absolute",
-
-            // top: translateY.interpolate({
-            //   inputRange: [0, dimensions.height - StatusBar.currentHeight],
-            //   outputRange: [0, dimensions.height + StatusBar.currentHeight - 5],
-
-            // }),
-
+            bottom: 0,
             transform: [
-              //  { translateY: Animated.subtract(translateY, BOTTOM_SHEET_HEIGHT / 2) },
               {
-                translateY: sheetY.interpolate({
-                  inputRange: [MAX_Y_STOPING_POINT, dimensions.height],
-                  outputRange: [MAX_Y_STOPING_POINT, dimensions.height],
+                translateY: translateY.interpolate({
+                  inputRange: [MAX_Y, BOTTOM_SHEET_HEIGHT - 20],
+                  outputRange: [MAX_Y, BOTTOM_SHEET_HEIGHT - 20],
                   extrapolate: "clamp",
                 }),
               },
             ],
+          },
+        ]}
+      >
+        <View style={{ height: 30, backgroundColor: "purple" }}></View>
+        <Animated.FlatList
+          scrollEnabled={isEnabled}
+          onScroll={(e) => (scroll.current = e.nativeEvent.contentOffset.y)}
+          data={[1, 2, 3, 4, 5, 6, 8, 9, 0]}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity
+                onPress={() => alert("hi")}
+                style={{ height: 100, backgroundColor: "yellow" }}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            );
           }}
-        ></Animated.View>
-        <Pressable
-          onPress={resetSqure}
-          style={{ position: "absolute", bottom: 6 }}
-        >
-          <Text>reset</Text>
-        </Pressable>
-      </View>
-    </>
+        />
+      </Animated.View>
+    </View>
+  );
+};
+
+const Test2 = () => {
+  const [bool, setBool] = useState(false);
+  const test = useSharedValue(1);
+
+  const reanimatedStyle = useAnimatedStyle(() => {
+    return {
+      top: test.value,
+    };
+  }, []);
+
+  useEffect(() => {}, []);
+
+  return (
+    <View style={[{ backgroundColor: "green", flex: 1 }]}>
+      <Animated.View
+        style={[
+          {
+            backgroundColor: "red",
+            height: 100,
+            width: 100,
+            position: "absolute",
+            top: 30,
+          },
+          reanimatedStyle,
+        ]}
+      ></Animated.View>
+      <View style={{ marginTop: "auto" }}></View>
+      <Button
+        title="start"
+        onPress={() =>
+          (test.value = withSequence(withTiming(50), withTiming(0)))
+        }
+      />
+      <Button
+        title="end"
+        onPress={() => (test.value = withSpring(100, { duration: 5000 }))}
+      />
+    </View>
   );
 };
 
